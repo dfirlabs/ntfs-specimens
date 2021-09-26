@@ -342,17 +342,6 @@ sudo umount ${MOUNT_POINT};
 
 cp ${IMAGE_FILE} ${SPECIMENS_PATH}/ntfs-scenario6.2.raw;
 
-sudo mount -o loop,rw,compression,streams_interface=windows ${IMAGE_FILE} ${MOUNT_POINT};
-
-sleep 0.1
-
-# Step 5 create a directory.
-mkdir ${MOUNT_POINT}/testdir1
-
-sudo umount ${MOUNT_POINT};
-
-cp ${IMAGE_FILE} ${SPECIMENS_PATH}/ntfs-scenario6.3.raw;
-
 # Remove the working image file.
 rm -f ${IMAGE_FILE};
 

@@ -385,6 +385,101 @@ call :run_diskpart UnmountVHD.diskpart
 
 copy %specimenspath%\%imagename% %specimenspath%\ntfs-scenario6.2.vhd
 
+rem Remove the working image file.
+del /f /q %specimenspath%\%imagename%
+
+rem Scenario 7:
+rem Variant of scenario 6
+
+rem Create a fixed-size VHD image with a NTFS file system
+set unitsize=4096
+set imagename=ntfs.vhd
+set imagesize=8
+
+echo create vdisk file=%cd%\%specimenspath%\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
+echo select vdisk file=%cd%\%specimenspath%\%imagename% >> CreateVHD.diskpart
+echo attach vdisk >> CreateVHD.diskpart
+echo convert mbr >> CreateVHD.diskpart
+echo create partition primary >> CreateVHD.diskpart
+
+echo format fs=ntfs label="TestVolume" unit=%unitsize% quick >> CreateVHD.diskpart
+
+echo assign letter=x >> CreateVHD.diskpart
+
+call :run_diskpart CreateVHD.diskpart
+
+rem Create an USN journal so we can track file changes in more detail.
+fsutil usn createjournal x:
+
+rem Step 1 create files and directories.
+mkdir x:\testdir1
+echo "testfile1" > x:\testdir1\testfile1
+echo "testfile2" > x:\testdir1\testfile2
+echo "testfile3" > x:\testdir1\testfile3
+echo "testfile4" > x:\testdir1\testfile4
+echo "testfile5" > x:\testdir1\testfile5
+echo "testfile6" > x:\testdir1\testfile6
+echo "testfile7" > x:\testdir1\testfile7
+echo "testfile8" > x:\testdir1\testfile8
+echo "testfile9" > x:\testdir1\testfile9
+echo "testfile10" > x:\testdir1\testfile10
+echo "testfile11" > x:\testdir1\testfile11
+echo "testfile12" > x:\testdir1\testfile12
+echo "testfile13" > x:\testdir1\testfile13
+echo "testfile14" > x:\testdir1\testfile14
+14ho "testfile15" > x:\testdir1\testfile15
+14ho "testfile16" > x:\testdir1\testfile16
+
+rem Step 2 ensure $FILE_NAME of testdir1 is stored in an attribute list.
+echo "ads1" > x:\testdir1:ads1
+echo "ads2" > x:\testdir1:ads2
+echo "ads3" > x:\testdir1:ads3
+echo "ads4" > x:\testdir1:ads4
+echo "ads5" > x:\testdir1:ads5
+echo "ads6" > x:\testdir1:ads6
+echo "ads7" > x:\testdir1:ads7
+echo "ads8" > x:\testdir1:ads8
+echo "ads9" > x:\testdir1:ads9
+echo "ads10" > x:\testdir1:ads10
+echo "ads11" > x:\testdir1:ads11
+echo "ads12" > x:\testdir1:ads12
+echo "ads13" > x:\testdir1:ads13
+echo "ads14" > x:\testdir1:ads14
+echo "ads15" > x:\testdir1:ads15
+echo "ads16" > x:\testdir1:ads16
+
+echo select vdisk file=%cd%\%specimenspath%\%imagename% > UnmountVHD.diskpart
+echo detach vdisk >> UnmountVHD.diskpart
+
+call :run_diskpart UnmountVHD.diskpart
+
+copy %specimenspath%\%imagename% %specimenspath%\ntfs-scenario7.1.vhd
+
+rem Sleep so that changes are noticeable.
+timeout /t 5 /nobreak
+
+echo select vdisk file=%cd%\%specimenspath%\%imagename% > MountVHD.diskpart
+echo attach vdisk >> MountVHD.diskpart
+
+echo assign letter=x >> MountVHD.diskpart
+
+call :run_diskpart MountVHD.diskpart
+
+rem Step 3 remove a directory.
+del /f /q /s x:\testdir1
+rmdir x:\testdir1
+
+rem Step 4 create a file.
+rem This steps assumes the MFT entry previously used by testdir1 is reused for testfile20.
+echo "testfile20" > x:\testfile20
+
+echo select vdisk file=%cd%\%specimenspath%\%imagename% > UnmountVHD.diskpart
+echo detach vdisk >> UnmountVHD.diskpart
+
+call :run_diskpart UnmountVHD.diskpart
+
+copy %specimenspath%\%imagename% %specimenspath%\ntfs-scenario7.2.vhd
+
 rem Sleep so that changes are noticeable.
 timeout /t 5 /nobreak
 
@@ -396,7 +491,6 @@ echo assign letter=x >> MountVHD.diskpart
 call :run_diskpart MountVHD.diskpart
 
 rem Step 5 create a directory.
-rem TODO: ensure MFT entry containing deleted x:\testdir1\testfile1 is not overwritten
 mkdir x:\testdir1
 
 echo select vdisk file=%cd%\%specimenspath%\%imagename% > UnmountVHD.diskpart
@@ -404,7 +498,7 @@ echo detach vdisk >> UnmountVHD.diskpart
 
 call :run_diskpart UnmountVHD.diskpart
 
-copy %specimenspath%\%imagename% %specimenspath%\ntfs-scenario6.3.vhd
+copy %specimenspath%\%imagename% %specimenspath%\ntfs-scenario7.3.vhd
 
 rem Remove the working image file.
 del /f /q %specimenspath%\%imagename%
