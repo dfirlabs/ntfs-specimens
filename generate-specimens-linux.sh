@@ -84,12 +84,16 @@ create_test_file_entries()
 	echo "My file ADS" > ${MOUNT_POINT}/file_ads1:myads
 
 	# Create a file with an alternate data stream (ADS) with a control code in the ADS name
-	touch ${MOUNT_POINT}/file_ads2
-	touch `printf "${MOUNT_POINT}/file_ads2:\x05SummaryInformation"`
+	# touch ${MOUNT_POINT}/file_ads2
+	# touch `printf "${MOUNT_POINT}/file_ads2:\x05SummaryInformation"`
 
 	# Create a directory with an alternate data stream (ADS) with content
 	mkdir ${MOUNT_POINT}/directory_ads1
 	echo "My directory ADS" > ${MOUNT_POINT}/directory_ads1:myads
+
+	# Create a symbolic link with an alternate data stream (ADS) with content
+	ln -s ${MOUNT_POINT}/directory_ads1 ${MOUNT_POINT}/directory_ads1_symboliclink1
+	echo "My symbolic link ADS" > ${MOUNT_POINT}/directory_ads1_symboliclink1:myads
 
 	# Create an LZNT1 compressed file if supported
 	mkdir ${MOUNT_POINT}/compressed
@@ -97,9 +101,6 @@ create_test_file_entries()
 	setfattr -h -v 0x00080000 -n system.ntfs_attrib ${MOUNT_POINT}/compressed
 
 	cp LICENSE ${MOUNT_POINT}/compressed/
-
-	# Create a file with an extended attribute with content
-	# TODO
 }
 
 assert_availability_binary dd;
