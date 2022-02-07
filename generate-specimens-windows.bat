@@ -413,7 +413,7 @@ rem Creates test file entries
 SETLOCAL
 SET driveletter=%1
 
-rem Create an emtpy file
+rem Create an empty file
 type nul >> %driveletter%:\emptyfile
 
 rem Create a directory
@@ -467,11 +467,11 @@ mklink /J %driveletter%:\directory_junction1 %driveletter%:\testdir1
 rem Create a symbolic link to a directory
 mklink /D %driveletter%:\directory_symboliclink1 %driveletter%:\testdir1
 
-rem Create a file with an altenative data stream (ADS)
+rem Create a file with an alternative data stream (ADS)
 type nul >> %driveletter%:\file_ads1
 echo My file ADS > %driveletter%:\file_ads1:myads
 
-rem Create a directory with an altenative data stream (ADS)
+rem Create a directory with an alternative data stream (ADS)
 mkdir %driveletter%:\directory_ads1
 echo My directory ADS > %driveletter%:\directory_ads1:myads
 
