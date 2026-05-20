@@ -1,0 +1,38 @@
+# Checks scripts.
+name: scripts
+on:
+  pull_request:
+  push:
+permissions: read-all
+jobs:
+  run_scripts_linux:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:26.04
+      options: --privileged
+    steps:
+    - uses: actions/checkout@v6
+    - name: Set up container
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        apt update -q
+        apt install -y libterm-readline-gnu-perl locales software-properties-common
+        locale-gen en_US.UTF-8
+        ln -f -s /usr/share/zoneinfo/UTC /etc/localtime
+    - name: Install dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        apt update -q
+        apt install -y attr ntfs-3g sudo
+    - name: Generate test data
+      env:
+        LANG: en_US.UTF-8
+      run: |
+        ./generate-specimens-linux.sh
+        ./generate-specimens-many-files-linux.sh
+    - uses: actions/upload-artifact@v7
+      with:
+        name: specimens-linux
+        path: specimens/mkntfs-*/*.raw
