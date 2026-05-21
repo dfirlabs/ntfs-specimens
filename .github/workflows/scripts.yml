@@ -36,3 +36,14 @@ jobs:
       with:
         name: specimens-linux
         path: specimens/mkntfs-*/*.raw
+  run_scripts_windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v6
+    - name: Generate test data
+      run: |
+        .\generate-specimens-windows.bat
+    - uses: actions/upload-artifact@v7
+      with:
+        name: specimens-windows
+        path: specimens/*/*.vhd
